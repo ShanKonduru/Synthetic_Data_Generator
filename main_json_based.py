@@ -73,6 +73,14 @@ address_json = """{
   "country": "Canada"
 }"""
 
+person_json = """{
+  "first_name": "Shan",
+  "middle_name": "",
+  "last_name": "Konduru",
+  "age": "50"
+}"""
+
+
 product_json ="""{
   "product_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
   "name": "Wireless Ergonomic Mouse",
@@ -145,6 +153,7 @@ order_json = """{
   "is_paid": true
 }"""
 
+person_json_schema = json.loads(person_json)
 address_json_schema = json.loads(address_json)
 product_json_schema = json.loads(product_json)
 disputecase_json_schema = json.loads(disputecase_json)
@@ -155,6 +164,11 @@ if __name__ == "__main__":
     print("--- Generating Simple User Data from JSON ---")
     address = Utility.GenerateSyntheticTestDataFromJson(address_json_schema)
     print(address)
+
+    pesons = Utility.GenerateSyntheticTestDataFromJson(person_json_schema, count=5)
+    for i, peson in enumerate(pesons):
+      print(f"\nPerson {i+1}:")
+      print(json.dumps(peson.get_data(), indent=2, cls=CustomJSONEncoder))
 
     users = Utility.GenerateSyntheticTestDataFromJson(
         simple_user_json_schema,
