@@ -1,7 +1,7 @@
-# main_class_based.py (and similar changes for main_json_based.py)
+# main_class_based.py
 import json
 from datetime import date, datetime
-import uuid # Import uuid module
+import uuid
 from utils.utility import Utility
 from src.models import DisputeCase, Order, Product # Import your model classes from 'src'
 
@@ -9,10 +9,12 @@ from src.models import DisputeCase, Order, Product # Import your model classes f
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (date, datetime)):
-            return obj.isoformat() # Convert date/datetime objects to ISO 8601 strings
+            # Ensure proper string formatting for dates and datetimes
+            # For datetimes, include milliseconds and Z for UTC, or offset if applicable
+            return obj.isoformat()
         if isinstance(obj, uuid.UUID):
-            return str(obj) # Convert UUID objects to their string representation
-        return json.JSONEncoder.default(self, obj) # Let the base class default method raise the TypeError for other types
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
 
 # --- Main Execution ---
 if __name__ == "__main__":
@@ -25,9 +27,14 @@ if __name__ == "__main__":
         field_name_status={"choices": ["Open", "Pending Review", "Closed - Resolved", "Closed - Unresolved"]},
         field_name_billing_address={
             "field_name_country": {"choices": ["USA", "Canada", "Mexico", "Brazil"]}
+        },
+        # FIX: Explicitly define date/datetime range for 'last_updated_at'
+        field_name_last_updated_at={
+            "start_date": "-5y", # E.g., 5 years ago
+            "end_date": "now"   # Use "now" for current timestamp. Faker interprets this correctly.
+                                # Or use a specific date string like "2025-07-27"
         }
     )
-    # Use the custom encoder here
     print(f"Generated Dispute Case:\n{json.dumps(dispute_testdata.get_data(), indent=2, cls=CustomJSONEncoder)}")
     print(f"\nAccessing specific data: Dispute ID = {dispute_testdata['dispute_id']}")
     print(f"Accessing nested data: Billing Address Country = {dispute_testdata['billing_address']['country']}")
@@ -41,9 +48,13 @@ if __name__ == "__main__":
         field_name_items={
             "field_name_price": {"min_value": 5.0, "max_value": 50.0, "decimal_places": 2},
             "field_name_quantity": {"min_value": 1, "max_value": 5}
+        },
+        # FIX: Explicitly define date/datetime range for 'order_date'
+        field_name_order_date={
+            "start_date": "-1y", # E.g., 1 year ago
+            "end_date": "now"
         }
     )
-    # Use the custom encoder here
     print(f"Generated Order Data:\n{json.dumps(order_testdata.get_data(), indent=2, cls=CustomJSONEncoder)}")
     print("-" * 50)
 
@@ -53,7 +64,6 @@ if __name__ == "__main__":
         product_object,
         field_name_price={"min_value": 1.99, "max_value": 999.99}
     )
-    # Use the custom encoder here
     print(f"Generated Product Data:\n{json.dumps(product_testdata.get_data(), indent=2, cls=CustomJSONEncoder)}")
     print("-" * 50)
 
@@ -64,7 +74,11 @@ if __name__ == "__main__":
         data = Utility.GenerateSyntheticTestDataFor(
             dispute_object_2,
             field_name_transaction_currency={"choices": ["USD", "EUR", "CAD"]},
-            field_name_dispute_reason={"choices": ["Delivery Issue", "Wrong Item"]}
+            field_name_dispute_reason={"choices": ["Delivery Issue", "Wrong Item"]},
+            # FIX: Explicitly define date/datetime range for 'last_updated_at' here too
+            field_name_last_updated_at={
+                "start_date": "-6m", # E.g., 6 months ago
+                "end_date": "now"
+            }
         )
-        # Use the custom encoder here
         print(json.dumps(data.get_data(), indent=2, cls=CustomJSONEncoder))

@@ -8,7 +8,7 @@ REM Display a message indicating what's happening
 echo.
 echo Running Python Class-Based Data Generator...
 echo ------------------------------------------
-python main_class_based.py
+REM python main_class_based.py
 
 echo.
 echo ------------------------------------------
